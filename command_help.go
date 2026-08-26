@@ -1,8 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
 
-func commandHelp() error {
+	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
+)
+
+func commandHelp(config *state.PokedexConfig) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println()

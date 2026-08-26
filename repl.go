@@ -5,14 +5,18 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
 )
 
 const prompt = "Pokedex > "
 
+type cliCommandCallback func(*state.PokedexConfig) error
+
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    cliCommandCallback
 }
 
 func cleanInput(text string) []string {
@@ -21,7 +25,7 @@ func cleanInput(text string) []string {
 	return words
 }
 
-func startRepl() {
+func startRepl(config *state.PokedexConfig) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print(prompt)
@@ -40,7 +44,7 @@ func startRepl() {
 			continue
 		}
 
-		err := c.callback()
+		err := c.callback(config)
 		if err != nil {
 			fmt.Printf("Command errored with error: %v", err)
 			continue
@@ -59,6 +63,16 @@ func getCommands() map[string]cliCommand {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			callback:    commandExit,
+		},
+		"map": {
+			name:        "map",
+			description: "Get Next Location Area",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get previous location area",
+			callback:    commandMapB,
 		},
 	}
 
