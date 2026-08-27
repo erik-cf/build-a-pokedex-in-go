@@ -11,7 +11,7 @@ import (
 
 const prompt = "Pokedex > "
 
-type cliCommandCallback func(*state.PokedexConfig) error
+type cliCommandCallback func(*state.PokedexConfig, ...string) error
 
 type cliCommand struct {
 	name        string
@@ -44,7 +44,13 @@ func startRepl(config *state.PokedexConfig) {
 			continue
 		}
 
-		err := c.callback(config)
+		var args []string
+		if len(words) == 1 {
+			args = make([]string, 0)
+		} else {
+			args = words[1:]
+		}
+		err := c.callback(config, args...)
 		if err != nil {
 			fmt.Printf("Command errored with error: %v", err)
 			continue
@@ -74,6 +80,10 @@ func getCommands() map[string]cliCommand {
 			description: "Get previous location area",
 			callback:    commandMapB,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Explore pokemons in location area",
+			callback:    commandExplore,
+		},
 	}
-
 }

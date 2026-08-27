@@ -1,6 +1,13 @@
 package pokeapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+
+	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
+)
 
 type PaginatedResult[T any] struct {
 	Count    int    `json:"count"`
@@ -17,4 +24,34 @@ func NewPaginatedResult[T any](data []byte) (*PaginatedResult[T], error) {
 	}
 
 	return result, err
+}
+
+func NewResult[T any](data []byte) (*T, error) {
+	var result T
+	err := json.Unmarshal(data, &result)
+	return &result, err
+}
+
+func FetchUnmarshalFromApi[T any](c *state.PokedexConfig, url string) (*T, error) {
+	var body []byte
+	v, ok := c.Cache.Get(url)
+	if ok {
+		fmt.Println("Fetching from cache")
+		body = v
+	} else {
+		fmt.Println("Not fetching from cache")
+		response, err := http.Get(url)
+		if err != nil {
+			return nil, err
+		}
+		defer response.Body.Close()
+
+		body, err = io.ReadAll(response.Body)
+		if response.StatusCode > 299 {
+			return nil, fmt.Errorf("PokeAPI returned an error: StatusCode %d, Body: %s", response.StatusCode, string(body))
+		}
+		c.Cache.Add(url, body)
+	}
+
+	return NewResult[T](body)
 }

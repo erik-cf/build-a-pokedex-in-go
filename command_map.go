@@ -5,12 +5,12 @@ import (
 	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
 )
 
-func commandMap(c *state.PokedexConfig) error {
+func commandMap(c *state.PokedexConfig, _ ...string) error {
 	maps, err := pokeapi.GetNextLocationArea(c)
 	if err != nil {
 		return err
 	}
 
-	printMap(maps, c)
+	printMap(*maps, c)
 	return nil
 }
