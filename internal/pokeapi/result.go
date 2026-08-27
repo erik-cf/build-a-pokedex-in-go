@@ -16,22 +16,6 @@ type PaginatedResult[T any] struct {
 	Results  []T    `json:"results"`
 }
 
-func NewPaginatedResult[T any](data []byte) (*PaginatedResult[T], error) {
-	result := &PaginatedResult[T]{}
-	err := json.Unmarshal(data, result)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, err
-}
-
-func NewResult[T any](data []byte) (*T, error) {
-	var result T
-	err := json.Unmarshal(data, &result)
-	return &result, err
-}
-
 func FetchUnmarshalFromApi[T any](c *state.PokedexConfig, url string) (*T, error) {
 	var body []byte
 	v, ok := c.Cache.Get(url)
@@ -53,5 +37,11 @@ func FetchUnmarshalFromApi[T any](c *state.PokedexConfig, url string) (*T, error
 		c.Cache.Add(url, body)
 	}
 
-	return NewResult[T](body)
+	return parseJsonData[T](body)
+}
+
+func parseJsonData[T any](data []byte) (*T, error) {
+	var result T
+	err := json.Unmarshal(data, &result)
+	return &result, err
 }
