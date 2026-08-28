@@ -1,11 +1,11 @@
-package main
+package repl
 
 import (
 	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
 )
 
-func commandMap(c *state.PokedexConfig, _ ...string) error {
-	maps, err := c.Client.GetNextLocationArea()
+func commandMapB(c *state.PokedexConfig, _ ...string) error {
+	maps, err := c.Client.GetPreviousLocationArea()
 	if err != nil {
 		return err
 	}

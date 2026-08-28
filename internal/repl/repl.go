@@ -1,4 +1,4 @@
-package main
+package repl
 
 import (
 	"bufio"
@@ -25,7 +25,7 @@ func cleanInput(text string) []string {
 	return words
 }
 
-func startRepl(config *state.PokedexConfig) {
+func StartRepl(config *state.PokedexConfig) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print(prompt)
