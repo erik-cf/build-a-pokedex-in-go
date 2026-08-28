@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/erik-cf/build-a-pokedex-in-go/internal/pokeapi"
 	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
 )
 
@@ -13,7 +12,7 @@ func commandExplore(c *state.PokedexConfig, args ...string) error {
 	}
 	area := args[0]
 	fmt.Printf("Exploring %s...\n", area)
-	locationArea, err := pokeapi.GetSingleLocationArea(c, area)
+	locationArea, err := c.Client.GetSingleLocationArea(area)
 	if err != nil {
 		return err
 	}

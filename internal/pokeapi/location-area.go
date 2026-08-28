@@ -2,8 +2,6 @@ package pokeapi
 
 import (
 	"fmt"
-
-	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
 )
 
 const locationAreaUrl = "https://pokeapi.co/api/v2/location-area/"
@@ -24,30 +22,37 @@ type LocationAreaPokemonEncounters struct {
 	Pokemon MinimalPokemon `json:"pokemon"`
 }
 
-func GetNextLocationArea(c *state.PokedexConfig) (*PaginatedResult[PaginatedLocationArea], error) {
-	url := c.NextLocation
-	return getPaginatedLocationArea(url, c)
+func (c *PokeApiClient) GetNextLocationArea() (*PaginatedResult[PaginatedLocationArea], error) {
+	url := c.nextLocation
+	return c.getPaginatedLocationArea(url)
 }
 
-func GetPreviousLocationArea(c *state.PokedexConfig) (*PaginatedResult[PaginatedLocationArea], error) {
-	url := c.PreviousLocation
+func (c *PokeApiClient) GetPreviousLocationArea() (*PaginatedResult[PaginatedLocationArea], error) {
+	url := c.previousLocation
 	if url == "" {
 		return nil, fmt.Errorf("You're on the first page")
 	}
-	return getPaginatedLocationArea(url, c)
+	return c.getPaginatedLocationArea(url)
 }
 
-func GetSingleLocationArea(c *state.PokedexConfig, name string) (*LocationArea, error) {
+func (c *PokeApiClient) GetSingleLocationArea(name string) (*LocationArea, error) {
 	if name == "" {
 		return nil, fmt.Errorf("Name is required to explore a location area\n")
 	}
 	return FetchUnmarshalFromApi[LocationArea](c, locationAreaUrl+name)
 }
 
-func getPaginatedLocationArea(url string, c *state.PokedexConfig) (*PaginatedResult[PaginatedLocationArea], error) {
+func (c *PokeApiClient) getPaginatedLocationArea(url string) (*PaginatedResult[PaginatedLocationArea], error) {
 	if url == "" {
 		return nil, fmt.Errorf("Invalid url to call PokeAPI: %v\n", url)
 	}
 
-	return FetchUnmarshalFromApi[PaginatedResult[PaginatedLocationArea]](c, url)
+	mapResult, err := FetchUnmarshalFromApi[PaginatedResult[PaginatedLocationArea]](c, url)
+	if err != nil {
+		return nil, err
+	}
+
+	c.nextLocation = mapResult.Next
+	c.previousLocation = mapResult.Previous
+	return mapResult, err
 }

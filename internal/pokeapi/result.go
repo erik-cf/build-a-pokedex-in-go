@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/erik-cf/build-a-pokedex-in-go/internal/state"
 )
 
 type PaginatedResult[T any] struct {
@@ -16,7 +14,7 @@ type PaginatedResult[T any] struct {
 	Results  []T    `json:"results"`
 }
 
-func FetchUnmarshalFromApi[T any](c *state.PokedexConfig, url string) (*T, error) {
+func FetchUnmarshalFromApi[T any](c *PokeApiClient, url string) (*T, error) {
 	var body []byte
 	v, ok := c.Cache.Get(url)
 	if ok {

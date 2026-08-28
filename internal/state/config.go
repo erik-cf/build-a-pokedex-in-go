@@ -3,19 +3,15 @@ package state
 import (
 	"time"
 
-	"github.com/erik-cf/build-a-pokedex-in-go/internal/pokecache"
+	"github.com/erik-cf/build-a-pokedex-in-go/internal/pokeapi"
 )
 
 type PokedexConfig struct {
-	NextLocation     string
-	PreviousLocation string
-	Cache            *pokecache.Cache
+	Client *pokeapi.PokeApiClient
 }
 
 func NewPokedexConfig() PokedexConfig {
 	return PokedexConfig{
-		NextLocation:     "https://pokeapi.co/api/v2/location-area/",
-		PreviousLocation: "",
-		Cache:            pokecache.NewCache(time.Second * 20),
+		Client: pokeapi.NewPokeApiClient(time.Second * 5),
 	}
 }

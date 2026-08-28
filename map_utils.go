@@ -12,6 +12,4 @@ func printMap(mapResult pokeapi.PaginatedResult[pokeapi.PaginatedLocationArea], 
 		fmt.Printf("%s\n", v.Name)
 	}
 
-	c.NextLocation = mapResult.Next
-	c.PreviousLocation = mapResult.Previous
 }
